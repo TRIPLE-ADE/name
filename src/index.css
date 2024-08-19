@@ -11,3 +11,18 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.blinking-marker {
+  width: 16px;
+  height: 16px;
+  background-color: red;
+  border-radius: 50%;
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
