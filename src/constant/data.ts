@@ -12,8 +12,8 @@ export const menuItems = [
   {
     label: "Officers",
     submenu: [
-      { label: "All Officers", path: "/officers/all" },
-      { label: "Active Officers", path: "/officers/active" },
+      { label: "All Officers", path: "/officers" },
+      { label: "Add Officers", path: "/officers/add" },
     ],
   },
   {

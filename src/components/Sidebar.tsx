@@ -7,6 +7,8 @@ import useToggleState from "@/hooks/useToggleState";
 import useDisclosure from "@/hooks/useDisclosure";
 import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { cn, buttonVariants } from "@/lib/utils";
+import { Button } from "./ui";
+import { useAuthContext } from "@/providers/authUtils";
 
 /**
  * Sidebar component that displays a collapsible menu with menu items and additional features.
@@ -17,6 +19,7 @@ const Sidebar: React.FC = () => {
   const { isOpen: isSidebarOpen, toggle: handleHamburgerClick } =
     useDisclosure();
   const { pathname } = useLocation();
+  const { userLogout } = useAuthContext();
 
   return (
     <>
@@ -39,7 +42,7 @@ const Sidebar: React.FC = () => {
       {/* Sidebar container */}
       <div
         className={cn(
-          "w-[289px] z-10 py-[60px] top-0 h-full bg-neutral-900 text-white fixed flex flex-col overflow-y-auto side-scrollbar transition-transform duration-300",
+          "w-[289px] z-[10000] py-[60px] top-0 h-full bg-neutral-900 text-white fixed flex flex-col overflow-y-auto side-scrollbar transition-transform duration-300",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full",
           "md:translate-x-0",
         )}
@@ -103,18 +106,13 @@ const Sidebar: React.FC = () => {
         </ul>
 
         {/* Logout button */}
-        <Link
-          to="/logout"
-          className={cn(
-            buttonVariants({
-              variant: "secondary",
-              size: "default",
-            }),
-            "block mt-auto",
-          )}
+        <Button
+          onClick={userLogout}
+          variant="secondary"
+          className="justify-start"
         >
           Logout
-        </Link>
+        </Button>
       </div>
     </>
   );

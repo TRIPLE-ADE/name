@@ -1,8 +1,7 @@
 import React, { ReactNode } from "react";
 import { Profile } from "./Profile";
 import Search from "./ui/search";
-import { Button } from "./ui/button";
-import { Bell } from "lucide-react";
+import { Notification } from "./Notification";
 
 interface HeaderProps {
   children: ReactNode;
@@ -16,10 +15,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
       </h1>
       <div className="flex items-center">
         <Search />
-        <Button variant="ghost" size="icon" className="ml-auto h-8 w-8">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
+        <Notification />
         <Profile />
       </div>
     </div>

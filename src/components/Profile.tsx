@@ -6,8 +6,11 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "react-router-dom";
 import { CircleUser } from "lucide-react";
+import { useAuthContext } from "@/providers/AuthProvider";
 
 export function Profile() {
+  const { userLogout } = useAuthContext();
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -42,12 +45,14 @@ export function Profile() {
           </Link>
         </div>
         <div className="mt-4 pt-4 border-t">
-          <Link
-            to="/logout"
-            className="flex items-center text-sm text-red-600 hover:underline"
+          <Button
+            onClick={userLogout}
+            variant="ghost"
+            size="sm"
+            className="text-sm text-red-600 hover:underline px-0"
           >
-            Log out
-          </Link>
+            Logout
+          </Button>
         </div>
       </HoverCardContent>
     </HoverCard>

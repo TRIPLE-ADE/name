@@ -1,20 +1,24 @@
-import { useRouteError } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 
-interface RouteError {
-  statusText?: string;
-  message?: string;
-}
-
-export default function ErrorPage() {
-  const error = useRouteError() as RouteError;
-
+const ErrorPage: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-900">
-      <h1 className="text-4xl font-bold mb-4">Oops!</h1>
-      <p className="text-lg mb-2">Sorry, an unexpected error has occurred.</p>
-      <p className="text-md text-gray-600">
-        <i>{error.statusText || error.message}</i>
-      </p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-700">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
+        <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
+        <p className="text-gray-600 mb-6">
+          Sorry, the page you're looking for doesn't exist.
+        </p>
+        <Link
+          to="/"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Go back home
+        </Link>
+      </div>
     </div>
   );
-}
+};
+
+export default ErrorPage;

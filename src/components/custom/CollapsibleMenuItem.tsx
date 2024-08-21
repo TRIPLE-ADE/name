@@ -20,7 +20,7 @@ const CollapsibleMenuItem: React.FC<CollapsibleMenuItemProps> = ({
     <li className="mt-auto">
       <Collapsible open={isOpen} onOpenChange={onToggle}>
         <CollapsibleTrigger
-          className="text-base font-light flex items-center gap-3"
+          className="text-base font-medium flex items-center gap-3"
           asChild
         >
           <Button className={cn("justify-between", buttonProps?.className)}>

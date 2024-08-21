@@ -1,1 +1,1 @@
-export const baseUrl = "";
+export const baseUrl = "https://pipline-be.onrender.com/pipeapp/";

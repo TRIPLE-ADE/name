@@ -1,15 +1,17 @@
+import { useToast } from "@/components/ui/use-toast";
+import { useAuthContext } from "@/providers/AuthProvider";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const useAxiosInterceptor = () => {
+  const { toast } = useToast();
+  const isToastShownRef = useRef(false);
+  const { userLogout } = useAuthContext();
+
   useEffect(() => {
-    // Interceptor to add Authorization header to each request
+    // Interceptor to handle requests
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
-        const token = ``;
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
       },
       (error) => {
@@ -26,14 +28,14 @@ const useAxiosInterceptor = () => {
         if (error.response) {
           // Check if the error is due to an unauthorized request
           if (error.response.status === 401) {
-            const tokenExpired =
+            const sessionEnd =
               error.response.data.message === "Invalid token" ||
               error.response.data.message === "Unauthorized";
-            if (tokenExpired) {
-              // Token is expired, handle token expiration logic (e.g., redirect to login)
-              console.log("Token is expired, redirect to login page");
+            if (sessionEnd) {
+              userLogout();
             }
           }
+
           // Extract and log error message from the response
           const message =
             error.response.data.message ||
@@ -41,7 +43,15 @@ const useAxiosInterceptor = () => {
             error?.response?.data?.data?.message ||
             error?.response?.data?.message ||
             error.message;
-          console.log(message);
+
+          // Display a toast notification with the error message
+          toast({
+            description: `${message} Please try again.` || "An error occurred",
+            variant: "destructive",
+            duration: 2000,
+          });
+
+          isToastShownRef.current = true;
         }
         return Promise.reject(error); // Reject the error to be handled by the calling code
       },
@@ -52,7 +62,7 @@ const useAxiosInterceptor = () => {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [userLogout, toast]);
 };
 
 export default useAxiosInterceptor;

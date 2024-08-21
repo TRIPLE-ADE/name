@@ -1,64 +1,94 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+//   const handleSubmit = (e: even) => {
+//     e.preventDefault();
+//     console.log("loading")
+//     login({
+//       username: "Habaisie343",
+//       password: "Temidayo2381"
+//     });
+
+//   };
+
+import { Button, Input, Label } from "@/components/ui";
+import { useLogin } from "@/api/auth";
+import { useForm } from "react-hook-form";
+import { LoginFormData, loginSchema } from "@/schemas/authSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function Login() {
+  const { mutate: login, isPending } = useLogin();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    console.log(data);
+    login(data);
+  };
+
   return (
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
+    <div className="w-full">
+      <div className="flex flex-col items-center justify-center py-12 m-auto min-h-lvh">
+        <form className="w-[350px] gap-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>
             <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
+              Enter your username below to login to your account
             </p>
           </div>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
+                id="username"
+                type="text"
+                {...register("username")}
+                placeholder="Username"
+                className={
+                  errors.username
+                    ? "focus-visible:ring-red-500"
+                    : "focus-visible:ring-green-500"
+                }
                 required
               />
+              {errors.username && (
+                <p className="text-red-500">{errors.username.message}</p>
+              )}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input
+                id="password"
+                type="password"
+                {...register("password")}
+                placeholder="Password"
+                className={
+                  errors.password
+                    ? "focus-visible:ring-red-500"
+                    : "focus-visible:ring-green-500"
+                }
+                required
+              />
+              {errors.password && (
+                <p className="text-red-500">{errors.password.message}</p>
+              )}
             </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full">
-              Login with Google
+            <Button
+              type="submit"
+              variant="outline"
+              className="w-full bg-indigo-400"
+              disabled={isPending}
+            >
+              {isPending ? "Loading" : "Login"}
             </Button>
           </div>
-          {/* <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link to="#" className="underline">
-              Sign up
-            </Link>
-          </div> */}
-        </div>
-      </div>
-      <div className="hidden bg-muted lg:block">
-        <img
-          src="/placeholder.svg"
-          alt="Image"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+        </form>
       </div>
     </div>
   );
