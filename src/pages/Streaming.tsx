@@ -1,6 +1,6 @@
 import { Layout, Header } from "@/components";
 import React from "react";
-import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 
 const Streaming: React.FC = () => {
   return (
@@ -11,17 +11,17 @@ const Streaming: React.FC = () => {
         {/* Sidebar for Map and Controls */}
         <aside className="w-1/4 bg-gray-700 p-4 text-white">
           <h2 className="text-xl font-semibold mb-4">Map & Controls</h2>
-          {/* Map Placeholder */}
+          {/* Map Component */}
           <div className="map-placeholder bg-gray-800 h-48 mb-4">
-            {/* Insert map component here */}
-            <MapContainer>
+            <MapContainer
+              center={[9.0820, 8.6753]}
+              zoom={6} 
+              style={{ height: "100%", width: "100%" }}
+            >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
-              <Polyline positions={[]}></Polyline>
             </MapContainer>
-            {/* <p className="text-center pt-16">Map Component</p> */}
           </div>
 
           {/* Controls */}

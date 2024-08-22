@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input, Label } from "@/components/ui";
 import {
   Select,
@@ -8,9 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Header, Layout } from "@/components";
-
-// Uncomment or replace with the actual DatePicker component if available
-// import { DatePicker } from '@/components/DatePicker';
+import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
 
 type Report = {
   id: number;
@@ -76,6 +74,28 @@ const Reports: React.FC = () => {
 
   const [reports, setReports] = useState<Report[]>(dummyReports);
 
+  useEffect(() => {
+    const fetchReports = () => {
+      const filteredReports = dummyReports.filter((report) => {
+        const matchesLocation = filters.location
+          ? report.location.toLowerCase().includes(filters.location.toLowerCase())
+          : true;
+        const matchesStatus = filters.status
+          ? report.status === filters.status
+          : true;
+        const matchesDateRange =
+          (filters.startDate ? report.date >= filters.startDate : true) &&
+          (filters.endDate ? report.date <= filters.endDate : true);
+
+        return matchesLocation && matchesStatus && matchesDateRange;
+      });
+
+      setReports(filteredReports);
+    };
+
+    fetchReports();
+  }, [filters]);
+
   const handleFilterChange = (
     field: keyof Filters,
     value: string | Date | null,
@@ -83,27 +103,8 @@ const Reports: React.FC = () => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
-  const fetchReports = () => {
-    const filteredReports = dummyReports.filter((report) => {
-      const matchesLocation = filters.location
-        ? report.location.toLowerCase().includes(filters.location.toLowerCase())
-        : true;
-      const matchesStatus = filters.status
-        ? report.status === filters.status
-        : true;
-      const matchesDateRange =
-        (filters.startDate ? report.date >= filters.startDate : true) &&
-        (filters.endDate ? report.date <= filters.endDate : true);
-
-      return matchesLocation && matchesStatus && matchesDateRange;
-    });
-
-    setReports(filteredReports);
-  };
-
   const exportReports = () => {
     console.log("Exporting reports:", reports);
-    // Implement export logic here
   };
 
   return (
@@ -111,30 +112,17 @@ const Reports: React.FC = () => {
       <Header>Reports</Header>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4">Reports</h1>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="flex flex-col">
-            <Label htmlFor="startDate">Start Date</Label>
-            {/* Uncomment or replace with the actual DatePicker component */}
-            {/* <DatePicker
-                            id="startDate"
-                            selected={filters.startDate}
-                            onChange={(date) => handleFilterChange('startDate', date)}
-                            placeholderText="Select start date"
-                            className="border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        /> */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="dateRange">Date Range</Label>
+            <DatePickerWithRange
+              onDateChange={(range: { from: Date; to: Date }) => {
+                handleFilterChange("startDate", range.from);
+                handleFilterChange("endDate", range.to);
+              }}
+            />
           </div>
-          <div className="flex flex-col">
-            <Label htmlFor="endDate">End Date</Label>
-            {/* Uncomment or replace with the actual DatePicker component */}
-            {/* <DatePicker
-                            id="endDate"
-                            selected={filters.endDate}
-                            onChange={(date) => handleFilterChange('endDate', date)}
-                            placeholderText="Select end date"
-                            className="border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        /> */}
-          </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
@@ -145,17 +133,17 @@ const Reports: React.FC = () => {
               className="border p-2 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="status">Status</Label>
             <Select
               onValueChange={(value) => handleFilterChange("status", value)}
               defaultValue=""
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] border p-2 focus:outline-none focus-within:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Open">Open</SelectItem>
                 <SelectItem value="Closed">Closed</SelectItem>
                 <SelectItem value="Pending">Pending</SelectItem>
@@ -165,14 +153,10 @@ const Reports: React.FC = () => {
         </div>
 
         <div className="flex justify-between mb-6">
-          <Button onClick={fetchReports} className="bg-indigo-400">
-            Fetch Reports
-          </Button>
-          <Button onClick={exportReports} className="bg-green-500">
+          <Button onClick={exportReports} className="bg-indigo-400 text-white">
             Export Reports
           </Button>
         </div>
-
         <div>
           {reports.length > 0 ? (
             <table className="min-w-full bg-white border border-gray-200">

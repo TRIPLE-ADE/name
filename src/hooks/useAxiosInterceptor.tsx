@@ -1,5 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuthContext } from "@/providers/authUtils";
 import axios from "axios";
 import { useEffect, useRef } from "react";
 

@@ -95,7 +95,7 @@ const MapComponent: React.FC = () => {
             <Button
               onClick={() => setShowFaults((prev) => !prev)}
               variant={showFaults ? "secondary" : "outline"}
-              className={`px-4 py-2 rounded`}
+              className={`px-4 py-2 rounded ${showFaults ? "text-white" : ""}`}
             >
               {showFaults ? "Hide Faults" : "Show Faults"}
             </Button>

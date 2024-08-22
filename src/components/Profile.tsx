@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "react-router-dom";
 import { CircleUser } from "lucide-react";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuthContext } from "@/providers/authUtils";
 
 export function Profile() {
   const { userLogout } = useAuthContext();
