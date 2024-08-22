@@ -7,7 +7,7 @@ type useToggleStateReturnType = {
 
 const useToggleState = (): useToggleStateReturnType => {
   const [openStep, setOpenStep] = useState<null | number>(null);
-  
+
   const handleToggle = (stepNumber: number) => {
     setOpenStep((prevOpenStep: number | null) =>
       prevOpenStep === stepNumber ? null : stepNumber,

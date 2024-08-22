@@ -7,14 +7,26 @@ import { ArrowBigLeftIcon } from "lucide-react";
 
 // Dummy data for notifications
 const notifications = [
-  { id: 1, message: "Pipeline leakage reported in Lagos area.", timestamp: "2024-08-20 14:22" },
+  {
+    id: 1,
+    message: "Pipeline leakage reported in Lagos area.",
+    timestamp: "2024-08-20 14:22",
+  },
   {
     id: 2,
     message: "Pipeline vandalism detected in Kano region.",
     timestamp: "2024-08-19 09:15",
   },
-  { id: 3, message: "Valve replacement completed in Enugu.", timestamp: "2024-08-18 17:30" },
-  { id: 4, message: "Routine maintenance completed in Abuja.", timestamp: "2024-08-17 11:05" },
+  {
+    id: 3,
+    message: "Valve replacement completed in Enugu.",
+    timestamp: "2024-08-18 17:30",
+  },
+  {
+    id: 4,
+    message: "Routine maintenance completed in Abuja.",
+    timestamp: "2024-08-17 11:05",
+  },
 ];
 
 const AllNotifications: React.FC = () => {
@@ -25,7 +37,11 @@ const AllNotifications: React.FC = () => {
       <Header>Dashboard</Header>
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="w-fit">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="w-fit"
+          >
             <ArrowBigLeftIcon />
             Back
           </Button>

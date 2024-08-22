@@ -14,13 +14,11 @@ const Streaming: React.FC = () => {
           {/* Map Component */}
           <div className="map-placeholder bg-gray-800 h-48 mb-4">
             <MapContainer
-              center={[9.0820, 8.6753]}
-              zoom={6} 
+              center={[9.082, 8.6753]}
+              zoom={6}
               style={{ height: "100%", width: "100%" }}
             >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             </MapContainer>
           </div>
 

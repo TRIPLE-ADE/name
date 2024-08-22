@@ -11,14 +11,26 @@ import { Link } from "react-router-dom";
 
 // Dummy notification data
 const notifications = [
-  { id: 1, message: "Pipeline leakage reported in Lagos area.", timestamp: "2024-08-20 14:22" },
+  {
+    id: 1,
+    message: "Pipeline leakage reported in Lagos area.",
+    timestamp: "2024-08-20 14:22",
+  },
   {
     id: 2,
     message: "Pipeline vandalism detected in Kano region.",
     timestamp: "2024-08-19 09:15",
   },
-  { id: 3, message: "Valve replacement completed in Enugu.", timestamp: "2024-08-18 17:30" },
-  { id: 4, message: "Routine maintenance completed in Abuja.", timestamp: "2024-08-17 11:05" },
+  {
+    id: 3,
+    message: "Valve replacement completed in Enugu.",
+    timestamp: "2024-08-18 17:30",
+  },
+  {
+    id: 4,
+    message: "Routine maintenance completed in Abuja.",
+    timestamp: "2024-08-17 11:05",
+  },
 ];
 
 export const Notification: React.FC = () => {

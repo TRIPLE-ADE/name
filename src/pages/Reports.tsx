@@ -78,7 +78,9 @@ const Reports: React.FC = () => {
     const fetchReports = () => {
       const filteredReports = dummyReports.filter((report) => {
         const matchesLocation = filters.location
-          ? report.location.toLowerCase().includes(filters.location.toLowerCase())
+          ? report.location
+              .toLowerCase()
+              .includes(filters.location.toLowerCase())
           : true;
         const matchesStatus = filters.status
           ? report.status === filters.status
