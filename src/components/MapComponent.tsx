@@ -109,7 +109,7 @@ const MapComponent: React.FC = () => {
             />
           </div>
         </div>
-        {isLoading && <SkeletonLoader />}
+        {isLoading && <SkeletonLoader />}Q
         {isError && <div>Error fetching data</div>}
         {!isLoading && !isError && (!data || data.length < 1) && (
           <div>No Pipeline route Found</div>
