@@ -77,7 +77,7 @@ const MapComponent: React.FC = () => {
   };
 
   const memoizedRoutes = useMemo(() => {
-    if (!data) return []; // If data is undefined or null, return an empty array
+    if (!data) return []; 
 
     return data.filter((route: PipelineRoute<Status>) => {
       if (filterStatus !== "All" && route.status !== filterStatus) return false;
@@ -109,7 +109,7 @@ const MapComponent: React.FC = () => {
             />
           </div>
         </div>
-        {isLoading && <SkeletonLoader />}Q
+        {isLoading && <SkeletonLoader />}
         {isError && <div>Error fetching data</div>}
         {!isLoading && !isError && (!data || data.length < 1) && (
           <div>No Pipeline route Found</div>
