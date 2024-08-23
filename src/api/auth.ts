@@ -23,8 +23,27 @@ export const useLogin = () => {
         variant: "success",
         duration: 2000,
       });
-      console.log(res);
       navigate("/");
+    },
+  });
+};
+
+export const useLogout = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await axios.post(`${baseUrl}logout/`);
+      return res.data;
+    },
+    onSuccess: (res) => {
+      toast({
+        description: res.message,
+        variant: "success",
+        duration: 2000,
+      });
+      navigate("/auth/signin");
     },
   });
 };
@@ -46,7 +65,6 @@ export const useRegister = () => {
         variant: "success",
         duration: 2000,
       });
-      console.log(res);
       navigate("/");
     },
   });

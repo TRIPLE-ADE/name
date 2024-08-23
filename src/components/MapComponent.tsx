@@ -10,14 +10,15 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import DetailsPane from "./DetailsPane"; // Import DetailsPane component
-import { PipelineRoutes } from "@/constant/data";
+import DetailsPane from "./DetailsPane";
 import { PipelineRoute, Status } from "@/types/Map";
 import { debounce } from "lodash";
 import { Button } from "./ui/button";
 import StatusDropdown from "./StatusDropdown";
 import Legend from "./Legend";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetPipelines } from "@/api/pipeline";
+import { SkeletonLoader } from "./ui";
 
 const getColorForStatus = (status: Status): string => {
   switch (status) {
@@ -58,7 +59,8 @@ const MapComponent: React.FC = () => {
   );
   const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
   const [showFaults, setShowFaults] = useState<boolean>(true);
-
+  const { data, isLoading, isError } = useGetPipelines();
+  
   const debouncedHandleMarkerClick = debounce(
     (latitude: number, longitude: number, stateName: string) => {
       setMapCenter([latitude, longitude]);
@@ -75,14 +77,16 @@ const MapComponent: React.FC = () => {
   };
 
   const memoizedRoutes = useMemo(() => {
-    return PipelineRoutes.filter((route) => {
+    if (!data) return [];  // If data is undefined or null, return an empty array
+  
+    return data.filter((route: PipelineRoute<Status>) => {
       if (filterStatus !== "All" && route.status !== filterStatus) return false;
       return true;
     }) as PipelineRoute<Status>[];
-  }, [filterStatus]);
+  }, [filterStatus, data]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-dvh">
       {/* Tabs for Data Layer */}
       <Tabs defaultValue="current" className="mb-4">
         <div className="flex flex-wrap items-center justify-between p-4 shadow-md mb-4">
@@ -105,274 +109,284 @@ const MapComponent: React.FC = () => {
             />
           </div>
         </div>
-        <TabsContent value="current">
-          <MapContainer
-            center={mapCenter}
-            zoom={mapZoom}
-            className="h-96 w-full"
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {memoizedRoutes.map((route) => {
-              const latLngs = [
-                [
-                  route.coordinates.start.latitude,
-                  route.coordinates.start.longitude,
-                ],
-                [
-                  route.coordinates.end.latitude,
-                  route.coordinates.end.longitude,
-                ],
-              ] as [number, number][];
+        {isLoading && <SkeletonLoader />}
+        {isError && <div>Error fetching data</div>}
+        {!isLoading && !isError && (!data || data.length < 1) && (
+          <div>No Pipeline route Found</div>
+        )}
+        {!isLoading && !isError && data && data.length > 0 && (
+          <>
+            <TabsContent value="current">
+              <MapContainer
+                center={mapCenter}
+                zoom={mapZoom}
+                className="h-96 w-full"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {memoizedRoutes.map((route) => {
+                  const latLngs = [
+                    [
+                      route.coordinates.start.latitude,
+                      route.coordinates.start.longitude,
+                    ],
+                    [
+                      route.coordinates.end.latitude,
+                      route.coordinates.end.longitude,
+                    ],
+                  ] as [number, number][];
 
-              const pipeColor = getColorForStatus(route.status);
+                  const pipeColor = getColorForStatus(route.status);
 
-              return (
-                <React.Fragment key={route.id}>
-                  <Polyline
-                    positions={latLngs}
-                    pathOptions={{ color: pipeColor, weight: 5 }}
-                    eventHandlers={{
-                      click: () =>
-                        debouncedHandleMarkerClick(
-                          route.coordinates.start.latitude,
-                          route.coordinates.start.longitude,
-                          route.name,
-                        ),
-                    }}
-                  >
-                    <Popup>{route.name}</Popup>
-                  </Polyline>
-                  {latLngs.map((latLng, index) => (
-                    <CircleMarker
-                      key={index}
-                      center={latLng}
-                      radius={8}
-                      color="blue"
-                      fillColor="blue"
-                      fillOpacity={0.6}
-                      eventHandlers={{
-                        click: () =>
-                          debouncedHandleMarkerClick(
-                            latLng[0],
-                            latLng[1],
-                            route.name,
-                          ),
-                      }}
-                    >
-                      <Popup>
-                        <div>
-                          <strong>{route.name}</strong>
-                          <br />
-                          Latitude: {latLng[0].toFixed(6)}
-                          <br />
-                          Longitude: {latLng[1].toFixed(6)}
-                          <br />
-                          State: {route.state}
-                          <br />
-                          Status: {route.status}
-                          <br />
-                          {route.status !== "normal" &&
-                            route.faults.length > 0 && (
-                              <>
-                                <strong>Faults:</strong>
-                                <br />
-                                {route.faults.map((fault, faultIndex) => (
-                                  <div key={faultIndex}>
-                                    {fault.description}
-                                    <br />
-                                    Latitude:{" "}
-                                    {fault.fault_coordinates.latitude.toFixed(
-                                      6,
-                                    )}
-                                    <br />
-                                    Longitude:{" "}
-                                    {fault.fault_coordinates.longitude.toFixed(
-                                      6,
-                                    )}
-                                    <br />
-                                    <small>
-                                      {new Date(
-                                        fault.reported_at,
-                                      ).toLocaleString()}
-                                    </small>
-                                  </div>
-                                ))}
-                              </>
-                            )}
-                        </div>
-                      </Popup>
-                    </CircleMarker>
-                  ))}
-
-                  {showFaults &&
-                    route.status !== "normal" &&
-                    route.faults.map((fault, index) => (
-                      <Marker
-                        key={index}
-                        position={[
-                          fault.fault_coordinates.latitude,
-                          fault.fault_coordinates.longitude,
-                        ]}
-                        icon={createBlinkingIcon()}
+                  return (
+                    <React.Fragment key={route.id}>
+                      <Polyline
+                        positions={latLngs}
+                        pathOptions={{ color: pipeColor, weight: 5 }}
                         eventHandlers={{
                           click: () =>
-                            handleFaultClick(
-                              fault.fault_coordinates.latitude,
-                              fault.fault_coordinates.longitude,
+                            debouncedHandleMarkerClick(
+                              route.coordinates.start.latitude,
+                              route.coordinates.start.longitude,
+                              route.name,
                             ),
                         }}
                       >
-                        <Popup>
-                          <div>
-                            <strong>Fault Detected</strong>
-                            <br />
-                            Description: {fault.description}
-                            <br />
-                            Latitude:{" "}
-                            {fault.fault_coordinates.latitude.toFixed(6)}
-                            <br />
-                            Longitude:{" "}
-                            {fault.fault_coordinates.longitude.toFixed(6)}
-                            <br />
-                            Reported at:{" "}
-                            {new Date(fault.reported_at).toLocaleString()}
-                            <br />
-                            Status: {fault.status}
-                          </div>
-                        </Popup>
-                      </Marker>
-                    ))}
-                </React.Fragment>
-              );
-            })}
-            {faultLocation && (
-              <MapZoomToLocation position={faultLocation} zoomLevel={12} />
-            )}
-          </MapContainer>
-          {selectedState && (
-            <DetailsPane
-              selectedState={selectedState}
-              onFilterStatusChange={setFilterStatus}
-              onFaultClick={handleFaultClick}
-              faults={memoizedRoutes.flatMap((route) => route.faults)}
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="historical">
-          {/* Render Historical Data Content */}
-          <MapContainer
-            center={mapCenter}
-            zoom={mapZoom}
-            className="h-96 w-full"
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {memoizedRoutes.map((route) => {
-              const latLngs = [
-                [
-                  route.coordinates.start.latitude,
-                  route.coordinates.start.longitude,
-                ],
-                [
-                  route.coordinates.end.latitude,
-                  route.coordinates.end.longitude,
-                ],
-              ] as [number, number][];
+                        <Popup>{route.name}</Popup>
+                      </Polyline>
+                      {latLngs.map((latLng, index) => (
+                        <CircleMarker
+                          key={index}
+                          center={latLng}
+                          radius={8}
+                          color="blue"
+                          fillColor="blue"
+                          fillOpacity={0.6}
+                          eventHandlers={{
+                            click: () =>
+                              debouncedHandleMarkerClick(
+                                latLng[0],
+                                latLng[1],
+                                route.name,
+                              ),
+                          }}
+                        >
+                          <Popup>
+                            <div>
+                              <strong>{route.name}</strong>
+                              <br />
+                              Latitude: {latLng[0].toFixed(6)}
+                              <br />
+                              Longitude: {latLng[1].toFixed(6)}
+                              <br />
+                              State: {route.state}
+                              <br />
+                              Status: {route.status}
+                              <br />
+                              {route.status !== "normal" &&
+                                route.faults.length > 0 && (
+                                  <>
+                                    <strong>Faults:</strong>
+                                    <br />
+                                    {route.faults.map((fault, faultIndex) => (
+                                      <div key={faultIndex}>
+                                        {fault.description}
+                                        <br />
+                                        Latitude:{" "}
+                                        {fault.fault_coordinates.latitude.toFixed(
+                                          6,
+                                        )}
+                                        <br />
+                                        Longitude:{" "}
+                                        {fault.fault_coordinates.longitude.toFixed(
+                                          6,
+                                        )}
+                                        <br />
+                                        <small>
+                                          {new Date(
+                                            fault.reported_at,
+                                          ).toLocaleString()}
+                                        </small>
+                                      </div>
+                                    ))}
+                                  </>
+                                )}
+                            </div>
+                          </Popup>
+                        </CircleMarker>
+                      ))}
 
-              return (
-                <Polyline
-                  key={route.id}
-                  positions={latLngs}
-                  pathOptions={{
-                    color: "gray",
-                    weight: 5,
-                    dashArray: "10, 10",
-                  }} // Historical data style
-                  eventHandlers={{
-                    click: () =>
-                      debouncedHandleMarkerClick(
-                        route.coordinates.start.latitude,
-                        route.coordinates.start.longitude,
-                        route.name,
-                      ),
-                  }}
-                >
-                  <Popup>{route.name} (Historical)</Popup>
-                  {latLngs.map((latLng, index) => (
-                    <CircleMarker
-                      key={index}
-                      center={latLng}
-                      radius={8}
-                      color="blue"
-                      fillColor="blue"
-                      fillOpacity={0.6}
+                      {showFaults &&
+                        route.status !== "normal" &&
+                        route.faults.map((fault, index) => (
+                          <Marker
+                            key={index}
+                            position={[
+                              fault.fault_coordinates.latitude,
+                              fault.fault_coordinates.longitude,
+                            ]}
+                            icon={createBlinkingIcon()}
+                            eventHandlers={{
+                              click: () =>
+                                handleFaultClick(
+                                  fault.fault_coordinates.latitude,
+                                  fault.fault_coordinates.longitude,
+                                ),
+                            }}
+                          >
+                            <Popup>
+                              <div>
+                                <strong>Fault Detected</strong>
+                                <br />
+                                Description: {fault.description}
+                                <br />
+                                Latitude:{" "}
+                                {fault.fault_coordinates.latitude.toFixed(6)}
+                                <br />
+                                Longitude:{" "}
+                                {fault.fault_coordinates.longitude.toFixed(6)}
+                                <br />
+                                Reported at:{" "}
+                                {new Date(fault.reported_at).toLocaleString()}
+                                <br />
+                                Status: {fault.status}
+                              </div>
+                            </Popup>
+                          </Marker>
+                        ))}
+                    </React.Fragment>
+                  );
+                })}
+                {faultLocation && (
+                  <MapZoomToLocation position={faultLocation} zoomLevel={12} />
+                )}
+              </MapContainer>
+              {selectedState && (
+                <DetailsPane
+                  selectedState={selectedState}
+                  onFilterStatusChange={setFilterStatus}
+                  onFaultClick={handleFaultClick}
+                  faults={memoizedRoutes.flatMap((route) => route.faults)}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="historical">
+              {/* Render Historical Data Content */}
+              <MapContainer
+                center={mapCenter}
+                zoom={mapZoom}
+                className="h-96 w-full"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {memoizedRoutes.map((route) => {
+                  const latLngs = [
+                    [
+                      route.coordinates.start.latitude,
+                      route.coordinates.start.longitude,
+                    ],
+                    [
+                      route.coordinates.end.latitude,
+                      route.coordinates.end.longitude,
+                    ],
+                  ] as [number, number][];
+
+                  return (
+                    <Polyline
+                      key={route.id}
+                      positions={latLngs}
+                      pathOptions={{
+                        color: "gray",
+                        weight: 5,
+                        dashArray: "10, 10",
+                      }} // Historical data style
                       eventHandlers={{
                         click: () =>
                           debouncedHandleMarkerClick(
-                            latLng[0],
-                            latLng[1],
+                            route.coordinates.start.latitude,
+                            route.coordinates.start.longitude,
                             route.name,
                           ),
                       }}
                     >
-                      <Popup>
-                        <div>
-                          <strong>{route.name}</strong>
-                          <br />
-                          Latitude: {latLng[0].toFixed(6)}
-                          <br />
-                          Longitude: {latLng[1].toFixed(6)}
-                          <br />
-                          State: {route.state}
-                          <br />
-                          Status: {route.status}
-                          <br />
-                          {route.status !== "normal" &&
-                            route.faults.length > 0 && (
-                              <>
-                                <strong>Faults:</strong>
-                                <br />
-                                {route.faults.map((fault, faultIndex) => (
-                                  <div key={faultIndex}>
-                                    {fault.description}
+                      <Popup>{route.name} (Historical)</Popup>
+                      {latLngs.map((latLng, index) => (
+                        <CircleMarker
+                          key={index}
+                          center={latLng}
+                          radius={8}
+                          color="blue"
+                          fillColor="blue"
+                          fillOpacity={0.6}
+                          eventHandlers={{
+                            click: () =>
+                              debouncedHandleMarkerClick(
+                                latLng[0],
+                                latLng[1],
+                                route.name,
+                              ),
+                          }}
+                        >
+                          <Popup>
+                            <div>
+                              <strong>{route.name}</strong>
+                              <br />
+                              Latitude: {latLng[0].toFixed(6)}
+                              <br />
+                              Longitude: {latLng[1].toFixed(6)}
+                              <br />
+                              State: {route.state}
+                              <br />
+                              Status: {route.status}
+                              <br />
+                              {route.status !== "normal" &&
+                                route.faults.length > 0 && (
+                                  <>
+                                    <strong>Faults:</strong>
                                     <br />
-                                    Latitude:{" "}
-                                    {fault.fault_coordinates.latitude.toFixed(
-                                      6,
-                                    )}
-                                    <br />
-                                    Longitude:{" "}
-                                    {fault.fault_coordinates.longitude.toFixed(
-                                      6,
-                                    )}
-                                    <br />
-                                    <small>
-                                      {new Date(
-                                        fault.reported_at,
-                                      ).toLocaleString()}
-                                    </small>
-                                  </div>
-                                ))}
-                              </>
-                            )}
-                        </div>
-                      </Popup>
-                    </CircleMarker>
-                  ))}
-                </Polyline>
-              );
-            })}
-            {faultLocation && (
-              <MapZoomToLocation position={faultLocation} zoomLevel={12} />
-            )}
-          </MapContainer>
-        </TabsContent>
-        <Legend />
+                                    {route.faults.map((fault, faultIndex) => (
+                                      <div key={faultIndex}>
+                                        {fault.description}
+                                        <br />
+                                        Latitude:{" "}
+                                        {fault.fault_coordinates.latitude.toFixed(
+                                          6,
+                                        )}
+                                        <br />
+                                        Longitude:{" "}
+                                        {fault.fault_coordinates.longitude.toFixed(
+                                          6,
+                                        )}
+                                        <br />
+                                        <small>
+                                          {new Date(
+                                            fault.reported_at,
+                                          ).toLocaleString()}
+                                        </small>
+                                      </div>
+                                    ))}
+                                  </>
+                                )}
+                            </div>
+                          </Popup>
+                        </CircleMarker>
+                      ))}
+                    </Polyline>
+                  );
+                })}
+                {faultLocation && (
+                  <MapZoomToLocation position={faultLocation} zoomLevel={12} />
+                )}
+              </MapContainer>
+            </TabsContent>
+            <Legend />
+          </>
+        )}
+
       </Tabs>
     </div>
   );

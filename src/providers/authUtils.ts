@@ -8,6 +8,7 @@ export const defaultAuthData: AuthContextData = {
   login: () => {},
   userLogout: () => {},
   user: null,
+  token: null,
 };
 
 export const AuthContext = createContext<AuthContextData>(defaultAuthData);

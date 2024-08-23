@@ -2,11 +2,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuthContext } from "@/providers/authUtils";
 import axios from "axios";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useAxiosInterceptor = () => {
   const { toast } = useToast();
   const isToastShownRef = useRef(false);
   const { userLogout } = useAuthContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Interceptor to handle requests
@@ -33,10 +35,11 @@ const useAxiosInterceptor = () => {
               error.response.data.message === "Unauthorized";
             if (sessionEnd) {
               userLogout();
+              navigate("/auth/signin")
             }
           }
 
-          // Extract and log error message from the response
+          // Extract and log the error message from the response
           const message =
             error.response.data.message ||
             error.response?.data?.data?.error?.message ||
@@ -62,7 +65,7 @@ const useAxiosInterceptor = () => {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [userLogout, toast]);
+  }, [userLogout, toast, navigate]);
 };
 
 export default useAxiosInterceptor;

@@ -1,6 +1,7 @@
 export interface LoginResponse {
   message: string;
   user: User;
+  token: string;
 }
 
 export interface User {
@@ -28,4 +29,5 @@ export interface AuthContextData {
   login: (user: LoginResponse) => void;
   userLogout: () => void;
   user: LoginResponse | null;
+  token: string | null;
 }

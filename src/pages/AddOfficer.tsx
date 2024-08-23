@@ -1,28 +1,10 @@
 import { Button, Input, Label } from "@/components/ui";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Header, Layout } from "@/components";
+import { AddOfficerFormData, addOfficerSchema } from "@/types/officer";
+import { useAddOfficers } from "@/api/officers";
 
-// Define validation schema
-const addOfficerSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-  email: z.string().email("Invalid email address"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
-  profile: z.object({
-    role: z.string().min(1, "Role is required"),
-    location: z.string().min(1, "Location is required"),
-    zone: z.string().min(1, "Zone is required"),
-    state: z.string().min(1, "State is required"),
-    area: z.string().min(1, "Area is required"),
-    unit: z.string().min(1, "Unit is required"),
-  }),
-});
-
-// Define form data type
-type AddOfficerFormData = z.infer<typeof addOfficerSchema>;
 
 export default function AddOfficer() {
   const {
@@ -32,10 +14,11 @@ export default function AddOfficer() {
   } = useForm<AddOfficerFormData>({
     resolver: zodResolver(addOfficerSchema),
   });
+  const { mutate: addOfficers, isPending } = useAddOfficers();
 
   const onSubmit = (data: AddOfficerFormData) => {
-    console.log(data);
-    // Perform API call to add officer
+    console.log(data)
+    addOfficers(data)
   };
 
   return (
@@ -274,8 +257,9 @@ export default function AddOfficer() {
               type="submit"
               variant="outline"
               className="w-full bg-indigo-400"
+              disabled={isPending}
             >
-              Add Officer
+              {isPending ? "Updating" : "Add Officer"}
             </Button>
           </div>
         </form>

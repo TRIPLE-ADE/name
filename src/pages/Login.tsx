@@ -1,13 +1,3 @@
-//   const handleSubmit = (e: even) => {
-//     e.preventDefault();
-//     console.log("loading")
-//     login({
-//       username: "Habaisie343",
-//       password: "Temidayo2381"
-//     });
-
-//   };
-
 import { Button, Input, Label } from "@/components/ui";
 import { useLogin } from "@/api/auth";
 import { useForm } from "react-hook-form";
@@ -26,7 +16,6 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    console.log(data);
     login(data);
   };
 
