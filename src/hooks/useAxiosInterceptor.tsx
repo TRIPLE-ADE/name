@@ -35,7 +35,7 @@ const useAxiosInterceptor = () => {
               error.response.data.message === "Unauthorized";
             if (sessionEnd) {
               userLogout();
-              navigate("/auth/signin")
+              navigate("/auth/signin");
             }
           }
 

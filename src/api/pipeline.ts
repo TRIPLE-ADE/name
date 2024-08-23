@@ -9,13 +9,11 @@ export const useGetPipelines = () => {
   return useQuery({
     queryFn: () =>
       axios
-        .get(`${baseUrl}pipeline-routes-viewset/`,
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        )
+        .get(`${baseUrl}pipeline-routes-viewset/`, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        })
         .then((res) => {
           return res.data;
         }),

@@ -60,7 +60,7 @@ const MapComponent: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
   const [showFaults, setShowFaults] = useState<boolean>(true);
   const { data, isLoading, isError } = useGetPipelines();
-  
+
   const debouncedHandleMarkerClick = debounce(
     (latitude: number, longitude: number, stateName: string) => {
       setMapCenter([latitude, longitude]);
@@ -77,8 +77,8 @@ const MapComponent: React.FC = () => {
   };
 
   const memoizedRoutes = useMemo(() => {
-    if (!data) return [];  // If data is undefined or null, return an empty array
-  
+    if (!data) return []; // If data is undefined or null, return an empty array
+
     return data.filter((route: PipelineRoute<Status>) => {
       if (filterStatus !== "All" && route.status !== filterStatus) return false;
       return true;
@@ -386,7 +386,6 @@ const MapComponent: React.FC = () => {
             <Legend />
           </>
         )}
-
       </Tabs>
     </div>
   );

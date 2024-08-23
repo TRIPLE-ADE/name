@@ -13,13 +13,11 @@ export const useAddOfficers = () => {
 
   return useMutation<void, Error, AddOfficerFormData>({
     mutationFn: async (data: AddOfficerFormData) => {
-      await axios.post(`${baseUrl}register/`, data,
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      ); 
+      await axios.post(`${baseUrl}register/`, data, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
     },
     onSuccess: () => {
       toast({

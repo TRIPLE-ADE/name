@@ -5,7 +5,6 @@ import { Header, Layout } from "@/components";
 import { AddOfficerFormData, addOfficerSchema } from "@/types/officer";
 import { useAddOfficers } from "@/api/officers";
 
-
 export default function AddOfficer() {
   const {
     register,
@@ -17,8 +16,8 @@ export default function AddOfficer() {
   const { mutate: addOfficers, isPending } = useAddOfficers();
 
   const onSubmit = (data: AddOfficerFormData) => {
-    console.log(data)
-    addOfficers(data)
+    console.log(data);
+    addOfficers(data);
   };
 
   return (
