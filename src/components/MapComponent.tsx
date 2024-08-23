@@ -77,7 +77,7 @@ const MapComponent: React.FC = () => {
   };
 
   const memoizedRoutes = useMemo(() => {
-    if (!data) return []; 
+    if (!data) return [];
 
     return data.filter((route: PipelineRoute<Status>) => {
       if (filterStatus !== "All" && route.status !== filterStatus) return false;

@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
       >
         {/* Sidebar header with logo */}
         <Link to="/" className="text-[40px] font-bold pb-[20px] pl-[30px]">
-          Monitoring System
+          Respects
         </Link>
 
         {/* Render menu items */}
