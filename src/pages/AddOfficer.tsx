@@ -254,8 +254,8 @@ export default function AddOfficer() {
             {/* Submit Button */}
             <Button
               type="submit"
-              variant="outline"
-              className="w-full bg-indigo-400"
+              variant="secondary" 
+              className="text-white"
               disabled={isPending}
             >
               {isPending ? "Updating" : "Add Officer"}

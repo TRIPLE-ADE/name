@@ -1,8 +1,11 @@
 import { Header, Layout } from "@/components";
 import React from "react";
 import { Input } from "@/components/ui/input"; // Adjust the import path as needed
+import { useAuthContext } from "@/providers/authUtils";
 
 const Settings: React.FC = () => {
+  const { user } = useAuthContext();
+
   return (
     <Layout>
       <Header>Settings</Header>
@@ -19,7 +22,7 @@ const Settings: React.FC = () => {
               </label>
               <Input
                 id="username"
-                defaultValue="shadcn" // Replace with dynamic user info
+                defaultValue={user?.user.username}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
               />
             </div>
@@ -33,7 +36,7 @@ const Settings: React.FC = () => {
               <Input
                 type="email"
                 id="email"
-                defaultValue="m@example.com" // Replace with dynamic user info
+                defaultValue={user?.user.email}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
               />
             </div>

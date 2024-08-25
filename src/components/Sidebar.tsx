@@ -9,6 +9,7 @@ import { Cross1Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { cn, buttonVariants } from "@/lib/utils";
 import { Button } from "./ui";
 import { useAuthContext } from "@/providers/authUtils";
+import logo from "@/assets/logo.png";
 
 /**
  * Sidebar component that displays a collapsible menu with menu items and additional features.
@@ -26,7 +27,7 @@ const Sidebar: React.FC = () => {
       {/* Hamburger button visible only on small screens */}
       <div
         className={cn(
-          "md:hidden p-4 fixed z-20 w-full",
+          "md:hidden p-4 fixed w-full z-[1200]",
           !isSidebarOpen && "bg-slate-50",
         )}
       >
@@ -42,14 +43,14 @@ const Sidebar: React.FC = () => {
       {/* Sidebar container */}
       <div
         className={cn(
-          "w-[289px] z-[10000] py-[60px] top-0 h-full bg-neutral-900 text-white fixed flex flex-col overflow-y-auto side-scrollbar transition-transform duration-300",
+          "w-[289px] z-[1000] py-[60px] top-0 h-full bg-green-700 text-white fixed flex flex-col overflow-y-auto side-scrollbar transition-transform duration-300",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full",
           "md:translate-x-0",
         )}
       >
         {/* Sidebar header with logo */}
-        <Link to="/" className="text-[40px] font-bold pb-[20px] pl-[30px]">
-          Respects
+        <Link to="/" className="text-[40px] font-bold pb-[20px]">
+          <img src={logo} alt="logo" className="w-32 m-auto" />
         </Link>
 
         {/* Render menu items */}
@@ -107,6 +108,7 @@ const Sidebar: React.FC = () => {
 
         {/* Logout button */}
         <Button
+          type="button"
           onClick={userLogout}
           variant="secondary"
           className="justify-start"

@@ -155,7 +155,7 @@ const Reports: React.FC = () => {
         </div>
 
         <div className="flex justify-between mb-6">
-          <Button onClick={exportReports} className="bg-indigo-400 text-white">
+          <Button onClick={exportReports} variant="secondary" className="text-white">
             Export Reports
           </Button>
         </div>

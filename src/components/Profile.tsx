@@ -9,7 +9,7 @@ import { CircleUser } from "lucide-react";
 import { useAuthContext } from "@/providers/authUtils";
 
 export function Profile() {
-  const { userLogout } = useAuthContext();
+  const { userLogout, user } = useAuthContext();
 
   return (
     <HoverCard>
@@ -25,21 +25,21 @@ export function Profile() {
       </HoverCardTrigger>
       <HoverCardContent className="w-56 p-4" align="end">
         <div className="flex flex-col space-y-1 mb-4">
-          <p className="text-sm font-medium leading-none">shadcn</p>
+          <p className="text-sm font-medium leading-none">{user?.user.username}</p>
           <p className="text-xs leading-none text-muted-foreground">
-            m@example.com
+            {user?.user.email}
           </p>
         </div>
         <div className="flex flex-col space-y-2">
           <Link
             to="/profile"
-            className="flex items-center text-sm text-blue-600 hover:underline"
+            className="flex items-center text-sm text-green-600 hover:underline"
           >
             Profile
           </Link>
           <Link
             to="/settings"
-            className="flex items-center text-sm text-blue-600 hover:underline"
+            className="flex items-center text-sm text-green-600 hover:underline"
           >
             Settings
           </Link>

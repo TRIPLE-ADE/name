@@ -68,7 +68,7 @@ export const Notification: React.FC = () => {
         <div className="mt-4 pt-4 border-t">
           <Link
             to="/notifications"
-            className="text-sm text-blue-600 hover:underline px-0"
+            className="text-sm text-green-600 hover:underline px-0"
           >
             View all notifications
           </Link>

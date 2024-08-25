@@ -3,6 +3,7 @@ import { useLogin } from "@/api/auth";
 import { useForm } from "react-hook-form";
 import { LoginFormData, loginSchema } from "@/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import logo from "@/assets/logo.png";
 
 export default function Login() {
   const { mutate: login, isPending } = useLogin();
@@ -24,6 +25,7 @@ export default function Login() {
       <div className="flex flex-col items-center justify-center py-12 m-auto min-h-lvh">
         <form className="w-[350px] gap-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-2 text-center">
+            <img src={logo} alt="logo" className="w-32 m-auto" />
             <h1 className="text-3xl font-bold">Login</h1>
             <p className="text-balance text-muted-foreground">
               Enter your username below to login to your account
@@ -71,7 +73,7 @@ export default function Login() {
             <Button
               type="submit"
               variant="outline"
-              className="w-full bg-indigo-400"
+              className="w-full bg-green-400"
               disabled={isPending}
             >
               {isPending ? "Loading" : "Login"}

@@ -3,7 +3,7 @@ import { Header, Layout, MapComponent } from "@/components";
 function Dashboard() {
   return (
     <Layout>
-      <Header>Dashboard</Header>
+      <Header>RESPECTS</Header>
       <MapComponent />
     </Layout>
   );
