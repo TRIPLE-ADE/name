@@ -254,7 +254,7 @@ export default function AddOfficer() {
             {/* Submit Button */}
             <Button
               type="submit"
-              variant="secondary" 
+              variant="secondary"
               className="text-white"
               disabled={isPending}
             >

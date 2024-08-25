@@ -25,7 +25,9 @@ export function Profile() {
       </HoverCardTrigger>
       <HoverCardContent className="w-56 p-4" align="end">
         <div className="flex flex-col space-y-1 mb-4">
-          <p className="text-sm font-medium leading-none">{user?.user.username}</p>
+          <p className="text-sm font-medium leading-none">
+            {user?.user.username}
+          </p>
           <p className="text-xs leading-none text-muted-foreground">
             {user?.user.email}
           </p>
